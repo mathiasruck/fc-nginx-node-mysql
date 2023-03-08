@@ -1,20 +1,19 @@
 version: '3'
 
 services:
-  app:
+  node:
     build:
       context: node
       dockerfile: Dockerfile
     networks:
       - node-network
-    volumes:
-      - ./node/data:/usr/src/app
     tty: true
-    container_name: app
+    container_name: node
     # dockerize waits until it's possible to connect over 'TCP' to the 'db' container at the port '3306'
     entrypoint: dockerize --wait tcp://db:3306 -timeout 20s docker-entrypoint.sh
-    ports:
-      - "3000:3000"
+    command:
+      - node
+      - index.js
     depends_on:
       - db
 
@@ -40,10 +39,10 @@ services:
     networks:
       - node-network
     ports:
-      - "8080:80"
+      - "8080:8080"
     tty: true
     depends_on:
-      - app
+      - node
 
 networks:
   node-network:
